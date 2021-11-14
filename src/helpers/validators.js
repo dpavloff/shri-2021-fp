@@ -80,10 +80,10 @@ export const validateFieldN6 = (colors) => {
 // 7. Все фигуры оранжевые.
 export const validateFieldN7 = (colors) =>
   R.allPass([
-    propIsColor(colors.square, "orange"),
-    propIsColor(colors.star, "orange"),
-    propIsColor(colors.circle, "orange"),
-    propIsColor(colors.triangle, "orange"),
+    propIsColor("square", "orange"),
+    propIsColor("star", "orange"),
+    propIsColor("circle", "orange"),
+    propIsColor("triangle", "orange"),
   ])(colors);
 
 // 8. Не красная и не белая звезда.
@@ -93,10 +93,10 @@ export const validateFieldN8 = (colors) =>
 // 9. Все фигуры зеленые.
 export const validateFieldN9 = (colors) =>
   R.allPass([
-    propIsColor(colors.square, "green"),
-    propIsColor(colors.star, "green"),
-    propIsColor(colors.circle, "green"),
-    propIsColor(colors.triangle, "green"),
+    propIsColor("square", "green"),
+    propIsColor("star", "green"),
+    propIsColor("circle", "green"),
+    propIsColor("triangle", "green"),
   ])(colors);
 
 // 10. Треугольник и квадрат одного цвета (не белого)
