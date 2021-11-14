@@ -31,9 +31,13 @@ const len = R.prop("length");
 
 // isRedShape
 const isRedStar = R.compose(isRed, isStar);
+const isRedTriangle = R.compose(isRed, isTriangle);
+const isRedSquare = R.compose(isRed, isSquare);
 
 // isBLueShape
 const isBlueCircle = R.compose(isBlue, isCircle);
+const isBlueSquare = R.compose(isBlue, isSquare);
+const isBlueTriangle = R.compose(isBlue, isTriangle);
 
 // isWhiteShape
 const isWhiteTriangle = R.compose(isWhite, isTriangle);
@@ -52,9 +56,20 @@ const isGreenStar = R.compose(isGreen, isStar);
 const isGreenCircle = R.compose(isGreen, isCircle);
 const isGreenTriangle = R.compose(isGreen, isTriangle);
 
+const triangleAndSquareGreen = R.allPass([isGreenTriangle, isGreenSquare]);
+const triangleAndSquareRed = R.allPass([isRedTriangle, isRedSquare]);
+const triangleAndSquareBlue = R.allPass([isBlueTriangle, isBlueSquare]);
+const triangleAndSquareOrange = R.allPass([isOrangeTriangle, isOrangeSquare]);
+
+const triangleAndSquare = R.anyPass([
+  triangleAndSquareRed,
+  triangleAndSquareGreen,
+  triangleAndSquareBlue,
+  triangleAndSquareOrange,
+]);
+
 // countShape
 const countRed = R.compose(len, R.filter(isRed), R.values);
-const countWhite = R.compose(len, R.filter(isWhite), R.values);
 const countOrange = R.compose(len, R.filter(isOrange), R.values);
 const countGreen = R.compose(len, R.filter(isGreen), R.values);
 const countBlue = R.compose(len, R.filter(isBlue), R.values);
@@ -135,7 +150,4 @@ export const validateFieldN9 = R.allPass([
 ]);
 
 // 10. Треугольник и квадрат одного цвета (не белого)
-export const validateFieldN10 = () => false;
-// R.equals(colors.triangle, colors.square) &&
-// !R.equals(colors.triangle, "white") &&
-// !R.equals(colors.square, "white");
+export const validateFieldN10 = triangleAndSquare;
