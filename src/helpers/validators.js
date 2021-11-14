@@ -13,55 +13,94 @@
  * Если какие либо функции написаны руками (без использования библиотек) это не является ошибкой
  */
 
-// 1. Красная звезда, зеленый квадрат, все остальные белые.
-export const validateFieldN1 = ({ star, square, triangle, circle }) => {
-  if (triangle !== "white" || circle !== "white") {
-    return false;
+import * as R from "ramda";
+
+const propIsColor = (prop, color) => R.propEq(prop, color);
+
+const getColorsLen = ({ star, square, triangle, circle }) => {
+  const colors = ["white", "red", "orange", "green", "blue"];
+  let lengths = {};
+
+  for (const color of colors) {
+    lengths[color] = [star, square, triangle, circle].filter(
+      (x) => x === color
+    ).length;
   }
 
-  return star === "red" && square === "green";
+  return lengths;
 };
 
+// 1. Красная звезда, зеленый квадрат, все остальные белые.
+export const validateFieldN1 = (colors) =>
+  R.allPass([
+    propIsColor("star", "red"),
+    propIsColor("square", "green"),
+    propIsColor("triangle", "white"),
+    propIsColor("circle", "white"),
+  ])(colors);
+
 // 2. Как минимум две фигуры зеленые.
-export const validateFieldN2 = ({ star, square, triangle, circle }) => {
-  return (
-    [star, square, triangle, circle].filter((x) => x === "green").length > 1
-  );
+export const validateFieldN2 = (colors) => {
+  let lengths = getColorsLen(colors);
+  return lengths["green"] >= 2;
 };
 
 // 3. Количество красных фигур равно кол-ву синих.
-export const validateFieldN3 = ({ star, square, triangle, circle }) => {
-  return (
-    [star, square, triangle, circle].filter((x) => x === "red").length ===
-    [star, square, triangle, circle].filter((x) => x === "blue").length
-  );
+export const validateFieldN3 = (colors) => {
+  let lengths = getColorsLen(colors);
+  return lengths["red"] === lengths["blue"];
 };
 
 // 4. Синий круг, красная звезда, оранжевый квадрат
-export const validateFieldN4 = ({ star, square, triangle, circle }) => {
-  return circle === "blue" && star === "red" && square === "orange";
-};
+export const validateFieldN4 = (colors) =>
+  R.allPass([
+    propIsColor("circle", "blue"),
+    propIsColor("star", "red"),
+    propIsColor("square", "orange"),
+  ])(colors);
 
 // 5. Три фигуры одного любого цвета кроме белого (четыре фигуры одного цвета – это тоже true).
-export const validateFieldN5 = ({ star, square, triangle, circle }) => {};
+export const validateFieldN5 = (colors) => {
+  const lengths = getColorsLen(colors);
+  const hasThree = Object.values(lengths).includes(3);
+  const hasFour = Object.values(lengths).includes(4);
+  return (hasFour || hasThree) && lengths["white"] <= 1;
+};
 
 // 6. Две зеленые фигуры (одна из них треугольник), еще одна любая красная.
-export const validateFieldN6 = () => false;
-
-// 7. Все фигуры оранжевые.
-export const validateFieldN7 = ({ star, square, triangle, circle }) => {
+export const validateFieldN6 = (colors) => {
+  let lengths = getColorsLen(colors);
   return (
-    [star, square, triangle, circle].filter((x) => x === "orange").length === 4
+    lengths["red"] === 1 &&
+    lengths["green"] === 2 &&
+    colors.triangle === "green"
   );
 };
 
+// 7. Все фигуры оранжевые.
+export const validateFieldN7 = (colors) =>
+  R.allPass([
+    propIsColor(colors.square, "orange"),
+    propIsColor(colors.star, "orange"),
+    propIsColor(colors.circle, "orange"),
+    propIsColor(colors.triangle, "orange"),
+  ])(colors);
+
 // 8. Не красная и не белая звезда.
-export const validateFieldN8 = ({ star, square, triangle, circle }) => {
-  return star !== "red" || star !== "white";
-};
+export const validateFieldN8 = (colors) =>
+  !R.equals(colors.star, "red") && !R.equals(colors.star, "white");
 
 // 9. Все фигуры зеленые.
-export const validateFieldN9 = () => false;
+export const validateFieldN9 = (colors) =>
+  R.allPass([
+    propIsColor(colors.square, "green"),
+    propIsColor(colors.star, "green"),
+    propIsColor(colors.circle, "green"),
+    propIsColor(colors.triangle, "green"),
+  ])(colors);
 
 // 10. Треугольник и квадрат одного цвета (не белого)
-export const validateFieldN10 = () => false;
+export const validateFieldN10 = (colors) =>
+  R.equals(colors.triangle, colors.square) &&
+  !R.equals(colors.triangle, "white") &&
+  !R.equals(colors.square, "white");
